@@ -1,60 +1,119 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <h1>{{ msg }}</h1>
-    <h2>Essential Links</h2>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank">Twitter</a></li>
-    </ul>
-    <h2>Ecosystem</h2>
-    <ul>
-      <li><a href="http://router.vuejs.org/" target="_blank">vue-router</a></li>
-      <li><a href="http://vuex.vuejs.org/" target="_blank">vuex</a></li>
-      <li><a href="http://vue-loader.vuejs.org/" target="_blank">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank">awesome-vue</a></li>
-    </ul>
+    <div id="title-bar">
+      <div class="left-bar">
+        <span class="logo"></span>
+        <span class="title"><b>OPEX ANALYTICS</b> MEETING SCHEDULER</span>
+      </div>
+      <div class="right-bar">
+        <span class="lang">Language</span>
+        <span class="lang-icon">天</span>
+      </div>
+    </div>
+    <div id="content">
+      <calendar></calendar>
+      <div class="new-evt-btn"></div>
+      <meeting></meeting>
+    </div>
   </div>
 </template>
 
 <script>
+import calendar from './components/Calendar'
+import meeting from './components/Meeting'
+
 export default {
   name: 'app',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
     }
+  },
+  components: {
+    'calendar': calendar,
+    'meeting': meeting
   }
 }
 </script>
 
 <style lang="scss">
+@import "global";
+
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  min-height: 100vh;
+  min-width: 100vw;
+  display: flex;
+  flex-direction: column;
 }
 
-h1, h2 {
-  font-weight: normal;
+#title-bar {
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  padding: 10px;
+  .left-bar {
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 60%;
+    .logo {
+      display: inline-block;
+      background: url('assets/logo.png') no-repeat;
+      background-size: contain;
+      width: 30px;
+      height: 30px;
+      vertical-align: middle;
+    }
+    .title {
+      color: $primary;
+      vertical-align: middle;
+      font-size: 16px;
+    }
+  }
+  .right-bar {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    .lang {
+      font-size: 14px;
+      vertical-align: middle;
+      margin-right: 5px;
+    }
+    .lang-icon {
+      width: 30px;
+      height: 30px;
+      display: inline-block;
+      border-radius: 50%;
+      vertical-align: middle;
+      background: $secondary;
+      color: white;
+      font-size: 14px;
+      text-align: center;
+      font-weight: bolder;
+      line-height: 2;
+      cursor: pointer;
+    }
+  }
 }
 
-ul {
-  list-style-type: none;
-  padding: 0;
+#content {
+  background: #f4f5f7;
+  height: calc(100vh - 45px);
 }
 
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-
-a {
-  color: #42b983;
+.new-evt-btn {
+  position: fixed;
+  right: 8vw;
+  bottom: 80px;
+  z-index: 999;
+  border-radius: 50%;
+  height: 60px;
+  width: 60px;
+  background: url('./assets/icon.png') no-repeat;
+  background-color: $primary;
+  background-size: 60%;
+  background-position: center center;
+  box-shadow:  3px 3px 10px rgba(0, 0, 0, 0.6);
+  cursor: pointer;
 }
 </style>
