@@ -6,14 +6,63 @@
         <span class="title"><b>OPEX ANALYTICS</b> MEETING SCHEDULER</span>
       </div>
       <div class="right-bar">
-        <span class="lang">Language</span>
-        <span class="lang-icon">天</span>
+        <div class="search" @click="showSearchBar = !showSearchBar; find = ''"></div>
+        <div @click="showLangBox = !showLangBox">
+          <span class="lang">Language</span>
+          <span class="lang-icon">天</span>
+          <!-- TODO - Move as component -->
+          <div class="lang-box" v-if="showLangBox">
+            <div class="lang-box-title">Change Language</div>
+            <div class="lang-box-opt" @click="changeLang(1)">
+              <div>
+                <div class="lang-box-opt-icn lg-eng"></div>
+                <div class="lang-box-opt-txt">English</div>
+              </div>
+              <div class="lang-box-opt-ck" :class="(lang == 1) ? 'sel' : ''"></div>
+            </div>
+            <div class="lang-box-opt" @click="changeLang(2)">
+              <div>
+                <div class="lang-box-opt-icn lg-ch"></div>
+                <div class="lang-box-opt-txt">Chinese</div>
+              </div>
+              <div class="lang-box-opt-ck" :class="(lang == 2) ? 'sel' : ''"></div>
+            </div>
+            <div class="lang-box-opt" @click="changeLang(3)">
+              <div>
+                <div class="lang-box-opt-icn lg-ru"></div>
+                <div class="lang-box-opt-txt">Russian</div>
+              </div>
+              <div class="lang-box-opt-ck" :class="(lang == 3) ? 'sel' : ''"></div>
+            </div>
+          </div>
+          <!-- TODO - Move as component -->
+        </div>
       </div>
     </div>
     <div id="content">
-      <calendar></calendar>
-      <div class="new-evt-btn"></div>
-      <meeting></meeting>
+      <!-- TODO - Move as component -->
+      <div class="search-bar" v-if="showSearchBar">
+        <span class="sc-wrap">
+          <input type="text" v-model="find" />
+          <span v-if="find" class="sc-close" @click="find=''">x</span>
+          <div class="search-results">
+            <div v-for="result in search_results" :key="result.id" @click="meetClicked(result.date)" class="search-result-item">
+              <div class="result-item">
+                <div class="result-icon"></div>
+                <div class="result-text">{{result.title}}</div>
+              </div>
+              <div class="result-date">
+                <div class="result-time">{{get12h(result.time_from)}} - {{get12h(result.time_to)}}</div>
+                <div class="result-day">{{getRelDay(result.date)}}</div>
+              </div>
+            </div>
+          </div>
+        </span>
+      </div>
+      <!-- TODO - Move as component -->
+      <calendar @date-clicked="dateClicked" @meet-clicked="meetClicked" :meetings="meetings"></calendar>
+      <div class="new-evt-btn" @click="$refs.meeting.show = true"></div>
+      <meeting ref="meeting"></meeting>
     </div>
   </div>
 </template>
@@ -21,16 +70,88 @@
 <script>
 import calendar from './components/Calendar'
 import meeting from './components/Meeting'
+import sample from './assets/sample-data'
 
 export default {
   name: 'app',
   data () {
     return {
+      lang: 1,
+      showLangBox: false,
+      showSearchBar: false,
+      meetings: [],
+      find: ''
     }
+  },
+  created: function () {
+    let meetings = window.localStorage.getItem('meetings');
+    meetings = JSON.parse(meetings);
+    if (!meetings) {
+      window.localStorage.setItem("meetings", JSON.stringify(sample));
+    }
+  },
+  mounted: function () {
+    this.meetings = JSON.parse(window.localStorage.getItem('meetings'));
+    this.meetings.map((item, index) => {
+      item.id = index
+    });
   },
   components: {
     'calendar': calendar,
     'meeting': meeting
+  },
+  methods: {
+    dateClicked: function(date) {
+      console.log('date clicked', date);
+      this.$refs.meeting.show = true;
+    },
+    meetClicked: function(date) {
+      console.log('meet clicked', date);
+      this.$refs.meeting.edit = true;
+      this.$refs.meeting.show = true;
+    },
+    changeLang(num) {
+      this.lang = num
+    },
+    get12h(time) {
+      let H = time.substr(0, 2);
+      let h = H % 12 || 12;
+      let ampm = (H < 12 || H === 24) ? "AM" : "PM";
+      
+      return (h + time.substr(2, 3) + " " + ampm);
+    },
+    getRelDay(date) {
+      let dateObj = new Date(date)
+      let today = new Date()
+      let yest = new Date()
+      yest.setDate(yest.getDate() - 1)
+      let weekFromToday = new Date()
+      weekFromToday.setDate(weekFromToday.getDate() + 7)
+
+      if (dateObj.toLocaleDateString() == today.toLocaleDateString()) {
+        return "Today"
+      } else if (dateObj.toLocaleDateString() == yest.toLocaleDateString()) {
+        return "Yesterday"
+      } else if (dateObj > today && dateObj < weekFromToday) {
+        return dateObj.toLocaleString('en-us', { weekday: 'long' });
+      }
+
+      return dateObj.toLocaleDateString()
+    }
+  },
+  computed: {
+    search_results: function () {
+      return this.meetings.filter((item) => {
+        if (this.find &&
+            ((item.title && item.title.toLowerCase().indexOf(this.find.toLowerCase()) > -1) ||
+             (item.desc && item.desc.toLowerCase().indexOf(this.find.toLowerCase()) > -1))
+           ) {
+          return true
+        }
+
+        return false
+      })
+    }
   }
 }
 </script>
@@ -71,13 +192,13 @@ export default {
     }
   }
   .right-bar {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    display: flex;
+    flex-direction: row;
     .lang {
       font-size: 14px;
       vertical-align: middle;
       margin-right: 5px;
+      cursor: pointer;
     }
     .lang-icon {
       width: 30px;
@@ -93,12 +214,200 @@ export default {
       line-height: 2;
       cursor: pointer;
     }
+    .lang-icon:hover,
+    .lang-icon:focus,
+    .lang-icon:active {
+      filter: brightness(120%);
+    }
+
+    .lang-box {
+      position: absolute;
+      right: 0;
+      top: 35px;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #dfdfdf;
+      box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6);
+      z-index: 5;
+      background: white;
+      .lang-box-title {
+        color: $primary;
+        text-transform: uppercase;
+        font-weight: bold;
+        margin-bottom: 15px;
+      }
+      .lang-box-opt {
+        color: #666666;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        >div {
+          display: flex;
+          flex-direction: row;
+          justify-content: flex-start;
+          margin-bottom: 10px;
+        }
+        .lg-ru {
+          background: url('./assets/russia.png') no-repeat;
+          background-size: 200%;
+        }
+        .lg-ch {
+          background: url('./assets/china.png') no-repeat;
+          background-size: 210%;
+        }
+        .lg-eng {
+          background: url('./assets/english.png') no-repeat;
+          background-size: 220%;
+        }
+        .lang-box-opt-icn {
+          width: 25px;
+          height: 20px;
+          margin-right: 10px;
+          background-position: center;
+        }
+        .lang-box-opt-ck {
+          width: 20px;
+          height: 20px;
+          background: url('./assets/uncheck.png') no-repeat;
+          background-size: 150%;
+          background-position: center;
+        }
+        .sel {
+          background: url('./assets/check.png') no-repeat;
+          background-size: 172%;
+          background-position: center;
+        }
+      }
+      .lang-box-opt:hover,
+      .lang-box-opt:active,
+      .lang-box-opt:focus {
+        filter: brightness(120%);
+      }
+    }
   }
+}
+
+.search {
+  border-radius: 50%;
+  border: 1px solid #b3b1b1;
+  width: 30px;
+  height: 30px;
+  background: url('./assets/glass.png') no-repeat;
+  background-size: 75%;
+  background-position: center;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.search-bar {
+  background: white;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  .sc-wrap {
+    display: inline-block;
+    position: relative;
+    width: 50%;
+    margin: 10px;
+    &::before {
+      content: '';
+      position: absolute;
+      pointer-events: none;
+      height: 30px;
+      width: 30px;
+      background: url('./assets/glass.png') no-repeat;
+      background-size: 75%;
+      background-position: 2px 12px;
+    }
+    input {
+      -webkit-appearance: none;
+      appearance: none;
+      border: 1px solid #eae7f3;
+      width: 100%;
+      padding: 10px;
+      padding-left: 30px;
+      font-size: 16px;
+      border-radius: 5px;
+      outline: none !important;
+      margin: auto;
+      box-sizing: border-box;
+    }
+    .sc-close {
+      position: absolute;
+      z-index: 5;
+      right: 10px;
+      top: 8px;
+      color:#666666;
+      cursor: pointer;
+    }
+
+    .search-results {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      box-sizing: border-box;
+      z-index: 5;
+      top: 40px;
+      box-shadow:  5px 5px 10px rgba(0, 0, 0, 0.2);
+      border-radius: 0 0 5px 5px;
+      max-height: 53vh;
+      overflow: scroll;
+
+      .search-result-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        border: 1px solid #eae7f3;
+        background: white;
+        cursor: pointer;
+        position: relative;
+
+        .result-item {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+        }
+        .result-icon {
+          width: 25px;
+          height: 25px;
+          background: url('./assets/logo.png') no-repeat;
+          background-size: contain;
+          margin-right: 5px;
+        }
+        .result-text {
+          color: $primary;
+          font-size: 18px;
+        }
+        .result-date {
+          font-size: 12px;
+          font-weight: bold;
+          min-width: 115px;
+          .result-time {
+            color: $primary;
+          }
+          .result-day {
+            color: #666666;
+          }
+        }
+      }
+
+      .search-result-item:last-child {
+        border-radius: 0 0 5px 5px;
+      }
+    }
+  }
+}
+// TODO - Move as single class for all buttons
+.search:hover,
+.search:focus,
+.search:active {
+  filter: brightness(120%);
 }
 
 #content {
   background: #f4f5f7;
   height: calc(100vh - 45px);
+  overflow-y: auto;
 }
 
 .new-evt-btn {
@@ -115,5 +424,33 @@ export default {
   background-position: center center;
   box-shadow:  3px 3px 10px rgba(0, 0, 0, 0.6);
   cursor: pointer;
+}
+
+// TODO - Move as single class for all buttons
+.new-evt-btn:hover,
+.new-evt-btn:focus,
+.new-evt-btn:active {
+  filter: brightness(120%);
+}
+
+@media only screen and (max-width: 600px) {
+  .sc-wrap {
+    width: 95% !important;
+  }
+  .search-results {
+    .result-item {
+      .result-text {
+        font-size: 14px !important;
+      }
+    }
+    .result-date {
+      font-size: 10px !important;
+      min-width: 85px !important;
+    }
+  }
+  #mt-wrapper {
+    width: 100vw !important;
+    left: 0 !important;
+  }
 }
 </style>

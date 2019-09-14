@@ -11,7 +11,7 @@
           <div id="cal-search"></div>
       </div>
       <div id="cal-container">
-          <date-box v-for="n in (1,35)" :date="getNthDate(n)" :index="n" :pointer="date_pointer" :key="n"></date-box>
+          <date-box v-for="n in (1,35)" @date-clicked="dateClicked" @meet-clicked="meetClicked" :date="getNthDate(n)" :meetings="getMeetings(getNthDate(n))" :index="n" :pointer="date_pointer" :key="n"></date-box>
       </div>
   </div>
 </template>
@@ -21,6 +21,9 @@ import date_box from './DateBox';
 
 export default {
   name: 'calendar',
+  props: {
+    meetings: Array
+  },
   data () {
     return {
         date_pointer: new Date()
@@ -44,6 +47,22 @@ export default {
       getNthDate: function(n) {
           let firstDate = new Date(this.year_pointer, this.date_pointer.getMonth())
           return new Date(firstDate.setDate(firstDate.getDate() - firstDate.getDay() + (n - 1)));
+      },
+      dateClicked: function(date) {
+          this.$emit('date-clicked', date)
+      },
+      meetClicked: function(date) {
+          this.$emit('meet-clicked', date)
+      },
+      getMeetings(date) {
+          return this.meetings.filter((meeting) => {
+              let mDateObj = new Date(meeting.date)
+              if (date.toLocaleDateString() === mDateObj.toLocaleDateString()) {
+                  return true
+              }
+
+              return false
+          })
       }
   },
   components: {
@@ -81,13 +100,14 @@ export default {
             #cal-date {
                 width: 140px;
                 display: inline-block;
+                text-transform: uppercase;
+                cursor: pointer;
+                font-weight: bold;
             }
             #cal-mon, #cal-yr {
-                text-transform: uppercase;
                 vertical-align: middle;
                 position: relative;
                 top: -1px;
-                cursor: pointer;
             }
         }
     }
