@@ -49,7 +49,7 @@
             <div v-for="result in search_results" :key="result.id" @click="meetClicked(result.date)" class="search-result-item">
               <div class="result-item">
                 <div class="result-icon"></div>
-                <div class="result-text">{{result.title}}</div>
+                <div class="result-text" v-html="getFormatedTitle(result.title)"></div>
               </div>
               <div class="result-date">
                 <div class="result-time">{{get12h(result.time_from)}} - {{get12h(result.time_to)}}</div>
@@ -62,7 +62,7 @@
       <!-- TODO - Move as component -->
       <calendar @date-clicked="dateClicked" @meet-clicked="meetClicked" :meetings="meetings"></calendar>
       <div class="new-evt-btn" @click="$refs.meeting.show = true"></div>
-      <meeting ref="meeting"></meeting>
+      <meeting ref="meeting" @save="save" @update="update" @delete="deleteM"></meeting>
     </div>
   </div>
 </template>
@@ -84,11 +84,13 @@ export default {
     }
   },
   created: function () {
+    // This piece of code is only required for pre-populating sample data
     let meetings = window.localStorage.getItem('meetings');
     meetings = JSON.parse(meetings);
     if (!meetings) {
       window.localStorage.setItem("meetings", JSON.stringify(sample));
     }
+    // This piece of code is only required for pre-populating sample data
   },
   mounted: function () {
     this.meetings = JSON.parse(window.localStorage.getItem('meetings'));
@@ -102,13 +104,18 @@ export default {
   },
   methods: {
     dateClicked: function(date) {
-      console.log('date clicked', date);
       this.$refs.meeting.show = true;
+      this.$refs.meeting.date = date.toISOString().split('T')[0];
     },
-    meetClicked: function(date) {
-      console.log('meet clicked', date);
+    meetClicked: function(meet) {
       this.$refs.meeting.edit = true;
       this.$refs.meeting.show = true;
+      this.$refs.meeting.id = meet.id;
+      this.$refs.meeting.title = meet.title;
+      this.$refs.meeting.date = meet.date;
+      this.$refs.meeting.time_from = meet.time_from;
+      this.$refs.meeting.time_to = meet.time_to;
+      this.$refs.meeting.desc = meet.desc;
     },
     changeLang(num) {
       this.lang = num
@@ -137,6 +144,50 @@ export default {
       }
 
       return dateObj.toLocaleDateString()
+    },
+    getFormatedTitle(title) {
+      let searchPos = title.toLowerCase().indexOf(this.find.toLowerCase());
+      let searchEndPos = searchPos + this.find.length + 1;
+      let titleArr = title.split('');
+      titleArr.splice(searchPos, 0, '<b>');
+      titleArr.splice(searchEndPos, 0, '</b>');
+      return titleArr.join('');
+    },
+    getMaxId() {
+      let maxIndex = 0;
+      this.meetings.map((elm) => { if (elm.id > maxIndex) { maxIndex = elm.id }});
+      return maxIndex;
+    },
+    putLocalStorage() {
+      let meetings = JSON.parse(JSON.stringify(this.meetings))
+      meetings = meetings.map((meet) => { delete meet.id; return meet; });
+      console.log(meetings);
+      window.localStorage.setItem("meetings", JSON.stringify(meetings));
+    },
+    save(meetObj) {
+      meetObj.id = (this.getMaxId() + 1)
+      this.meetings.push(meetObj);
+      this.putLocalStorage();
+    },
+    update(meetObj) {
+      this.meetings = this.meetings.map((meet) => {
+        if (meet.id === meetObj.id) {
+          return meetObj;
+        } else {
+          return meet;
+        }
+      });
+      this.putLocalStorage();
+    },
+    deleteM(id) {
+      this.meetings = this.meetings.filter((meet) => {
+        if (meet.id !== id) {
+          return true;
+        } else {
+          return false;
+        }
+      })
+      this.putLocalStorage();
     }
   },
   computed: {
@@ -375,8 +426,12 @@ export default {
           margin-right: 5px;
         }
         .result-text {
-          color: $primary;
+          color: rgba($primary, 0.6);
           font-size: 18px;
+          font-weight: thinner;
+          b {
+            color: $primary;
+          }
         }
         .result-date {
           font-size: 12px;

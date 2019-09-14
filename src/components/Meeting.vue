@@ -3,24 +3,24 @@
         <div class="mt-header">{{edit ? 'Edit Meeting' : 'New Meeting'}}<div @click="closeBox" class="mt-close"></div></div>
         <div class="mt-title">
             <span class="mt-title-icn"></span>
-            <input type="text" placeholder="Add meeting title..."/>
+            <input type="text" v-model="title" placeholder="Add meeting title..."/>
         </div>
         <div class="mt-time">
             <span class="mt-time-icn"></span>
-            <input class="mt-hf" type="datetime-local" />&nbsp;-&nbsp;<input class="mt-hf" type="time" />
+            <input class="mt-hf" v-model="date" type="date" />&nbsp;-&nbsp;<input class="mt-tr" v-model="time_from" type="time" />&nbsp;-&nbsp;<input v-model="time_to" class="mt-tr" type="time" />
         </div>
         <div class="mt-desc">
             <span class="mt-desc-icn"></span>
-            <textarea placeholder="Meeting description..."/>
+            <textarea v-model="desc" placeholder="Meeting description..."/>
         </div>
         <div class="mt-btns">
-            <div :style="{visibility: edit ? 'visible' : 'hidden'}" class="mt-trash">
+            <div :style="{visibility: edit ? 'visible' : 'hidden'}" @click="deleteM" class="mt-trash">
                 <div class="mt-trash-icon"></div>
                 <div>Delete Meeting</div>
             </div>
             <div class="mt-right-btns">
                 <div class="mt-mr-btn">More Options</div>
-                <div class="mt-sav-btn">{{edit ? 'Update' : 'Save'}}</div>
+                <div class="mt-sav-btn" @click="persist">{{edit ? 'Update' : 'Save'}}</div>
             </div>
         </div>
     </div>
@@ -32,13 +32,45 @@ export default {
   data () {
     return {
         show: false,
-        edit: false
+        edit: false,
+        id: null,
+        title: '',
+        date: null,
+        time_from: null,
+        time_to: null,
+        desc: ''
     }
   },
   methods: {
       closeBox: function () {
         this.show = false;
         this.edit = false;
+        this.id = null;
+        this.title = '';
+        this.date = null;
+        this.time_from = null;
+        this.time_to = null;
+        this.desc = null;
+      },
+      persist: function () {
+          let meetingObj = {
+              "id": this.id,
+              "title": this.title,
+              "date": this.date,
+              "time_from": this.time_from,
+              "time_to": this.time_to,
+              "desc": this.desc
+          };
+          if (!this.edit) {
+              this.$emit('save', meetingObj);
+          } else {
+              this.$emit('update', meetingObj);
+          }
+          this.closeBox();
+      },
+      deleteM: function () {
+          this.$emit('delete', this.id);
+          this.closeBox();
       }
   }
 }
@@ -101,7 +133,11 @@ export default {
             appearance: none;
         }
         .mt-hf {
-            width: 40%;
+            width: 35%;
+        }
+        .mt-tr {
+            width: 23%;
+            padding-left: 0;
         }
     }
     .mt-title .mt-title-icn {

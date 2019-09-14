@@ -45,24 +45,28 @@ export default {
           this.date_pointer = new Date(this.date_pointer.setMonth(this.date_pointer.getMonth() - 1));
       },
       getNthDate: function(n) {
-          let firstDate = new Date(this.year_pointer, this.date_pointer.getMonth())
+          let firstDate = new Date(this.year_pointer, this.date_pointer.getMonth());
           return new Date(firstDate.setDate(firstDate.getDate() - firstDate.getDay() + (n - 1)));
       },
       dateClicked: function(date) {
-          this.$emit('date-clicked', date)
+          this.$emit('date-clicked', date);
       },
-      meetClicked: function(date) {
-          this.$emit('meet-clicked', date)
+      meetClicked: function(meet) {
+          this.$emit('meet-clicked', meet);
       },
       getMeetings(date) {
-          return this.meetings.filter((meeting) => {
+          let meetingsInDate = this.meetings.filter((meeting) => {
               let mDateObj = new Date(meeting.date)
               if (date.toLocaleDateString() === mDateObj.toLocaleDateString()) {
-                  return true
+                  return true;
               }
 
-              return false
-          })
+              return false;
+          });
+          return meetingsInDate.sort((a, b) => {
+              // 24hr format, hence 1st 2 chars will be checked internally
+              return (a.time_from > b.time_from) ? 1 : -1; 
+          });
       }
   },
   components: {

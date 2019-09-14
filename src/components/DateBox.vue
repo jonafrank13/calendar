@@ -3,7 +3,7 @@
     <div :style="{visibility: (index < 8) ? 'visible' : 'hidden'}" class="cal-date-day">{{day}}</div>
     <div class="cal-date-day-n" :class="isCurrMonth ? '' : 'oth-month'">{{day_val}}</div>
     <div class="cal-date-evt-cnt">
-      <div v-for="meet in meetings" :key="meet.id" class="cal-date-evt" @click.stop="meetClicked">
+      <div v-for="meet in meetings" :key="meet.id" class="cal-date-evt" @click.stop="meetClicked(meet)">
         <span class="cal-date-evt-icn"></span>
         <span class="cal-date-evt-time">{{get12h(meet.time_from)}} - </span>
         <span class="cal-date-evt-txt">{{meet.title}}</span>
@@ -59,8 +59,8 @@ export default {
     dateClicked: function() {
       this.$emit("date-clicked", this.date);
     },
-    meetClicked: function() {
-      this.$emit("meet-clicked", this.date);
+    meetClicked: function(meet) {
+      this.$emit("meet-clicked", meet);
     },
     get12h(time) {
       let H = time.substr(0, 2);
