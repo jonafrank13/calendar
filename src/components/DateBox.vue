@@ -1,5 +1,5 @@
 <template>
-  <div class="cal-date-box" :class="isToday ? 'current' : ''" @click="dateClicked">
+  <div class="cal-date-box" :class="[isToday ? 'current' : '', isSelected ? 'selected' : '']" @click="dateClicked" >
     <div :style="{visibility: (index < 8) ? 'visible' : 'hidden'}" class="cal-date-day">{{day}}</div>
     <div class="cal-date-day-n" :class="isCurrMonth ? '' : 'oth-month'">{{day_val}}</div>
     <div class="cal-date-evt-cnt">
@@ -19,10 +19,8 @@ export default {
     date: Date,
     index: Number,
     pointer: Date,
-    meetings: Array
-  },
-  data() {
-    return {};
+    meetings: Array,
+    selected_date: Date
   },
   computed: {
     isToday: function() {
@@ -37,10 +35,7 @@ export default {
       );
     },
     day: function() {
-      if (!this.date) {
-        return "Mon";
-      }
-      return this.date.toLocaleDateString("en-us", { weekday: "short" });
+      return this.date.toLocaleDateString(this.$parent.$parent.$data.lang, { weekday: "short" });
     },
     day_val: function() {
       if (!this.date) {
@@ -53,6 +48,12 @@ export default {
         return true;
       }
       return this.date.getMonth() === this.pointer.getMonth();
+    },
+    isSelected: function() {
+      if (!this.selected_date) {
+        return false
+      }
+      return this.date.toLocaleDateString() === this.selected_date.toLocaleDateString()
     }
   },
   methods: {
@@ -135,7 +136,7 @@ export default {
 }
 
 .current {
-  border-top: 4px solid $secondary;
+  border-top: 4px solid $secondary !important;
   .cal-date-day {
     color: $secondary !important;
   }
@@ -143,5 +144,38 @@ export default {
     background: $secondary;
     color: white !important;
   }
+}
+
+@media only screen and (max-width: 600px) {
+    .cal-date-box {
+      height: 50px;
+      max-height: 50px;
+      .cal-date-day-n {
+        font-size: 16px;
+        width: 23px;
+        height: 23px;
+      }
+      .cal-date-evt-cnt {
+        display: none;
+      }
+    }
+    .selected {
+      border: 4px solid $primary;
+      .cal-date-evt-cnt {
+        display: inline-block !important;
+        position: fixed;
+        top: 65vh;
+        left: 0;
+        box-sizing: border-box;
+        width: 100%;
+        border-top: 2px solid #3333;
+        padding: 10px !important;
+        background: white;
+        z-index: 5;
+        .cal-date-evt {
+          font-size: 18px !important;
+        }
+      }
+    }
 }
 </style>

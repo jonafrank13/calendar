@@ -1,9 +1,9 @@
 <template>
     <div v-if="show" id="mt-wrapper">
-        <div class="mt-header">{{edit ? 'Edit Meeting' : 'New Meeting'}}<div @click="closeBox" class="mt-close"></div></div>
+        <div class="mt-header">{{(edit ? word('edit') : word('new')) + ' ' + word('meeting')}}<div @click="closeBox" class="mt-close"></div></div>
         <div class="mt-title">
             <span class="mt-title-icn"></span>
-            <input type="text" v-model="title" placeholder="Add meeting title..."/>
+            <input type="text" v-model="title" :placeholder="word('meet_title')+'...'"/>
         </div>
         <div class="mt-time">
             <span class="mt-time-icn"></span>
@@ -11,22 +11,24 @@
         </div>
         <div class="mt-desc">
             <span class="mt-desc-icn"></span>
-            <textarea v-model="desc" placeholder="Meeting description..."/>
+            <textarea v-model="desc" :placeholder="word('meet_desc')+'...'"/>
         </div>
         <div class="mt-btns">
             <div :style="{visibility: edit ? 'visible' : 'hidden'}" @click="deleteM" class="mt-trash">
                 <div class="mt-trash-icon"></div>
-                <div>Delete Meeting</div>
+                <div>{{word('delete_meet')}}</div>
             </div>
             <div class="mt-right-btns">
-                <div class="mt-mr-btn">More Options</div>
-                <div class="mt-sav-btn" @click="persist">{{edit ? 'Update' : 'Save'}}</div>
+                <div class="mt-mr-btn">{{word('more_opts')}}</div>
+                <div class="mt-sav-btn" @click="persist" :disable="shouldDisable">{{edit ? word('update') : word('save')}}</div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import i18n from '../langKeys'
+
 export default {
   name: 'meeting',
   data () {
@@ -71,6 +73,14 @@ export default {
       deleteM: function () {
           this.$emit('delete', this.id);
           this.closeBox();
+      },
+      word(key) {
+        return i18n[this.$parent.$data.lang][key]
+      }
+  },
+  computed: {
+      shouldDisable: function () {
+          return !this.time_from || !this.time_to || !this.date || !this.title
       }
   }
 }
@@ -214,6 +224,11 @@ export default {
     .mt-sav-btn:focus,
     .mt-sav-btn:active {
         filter: brightness(120%);
+    }
+
+    [disable] {
+        pointer-events: none;
+        opacity: 0.6;
     }
 }
 </style>

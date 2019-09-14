@@ -11,7 +11,7 @@
           <div id="cal-search"></div>
       </div>
       <div id="cal-container">
-          <date-box v-for="n in (1,35)" @date-clicked="dateClicked" @meet-clicked="meetClicked" :date="getNthDate(n)" :meetings="getMeetings(getNthDate(n))" :index="n" :pointer="date_pointer" :key="n"></date-box>
+          <date-box v-for="n in (1,35)" @date-clicked="dateClicked" @meet-clicked="meetClicked" :date="getNthDate(n)" :meetings="getMeetings(getNthDate(n))" :index="n" :pointer="date_pointer" :selected_date="selected_date" :key="n"></date-box>
       </div>
   </div>
 </template>
@@ -26,12 +26,13 @@ export default {
   },
   data () {
     return {
-        date_pointer: new Date()
+        date_pointer: new Date(),
+        selected_date: null
     }
   },
   computed: {
     month_pointer: function () {
-        return this.date_pointer.toLocaleDateString('en-us', { month: 'long' });
+        return this.date_pointer.toLocaleDateString(this.$parent.$data.lang, { month: 'long' });
     },
     year_pointer: function () {
         return this.date_pointer.getFullYear()
@@ -49,7 +50,10 @@ export default {
           return new Date(firstDate.setDate(firstDate.getDate() - firstDate.getDay() + (n - 1)));
       },
       dateClicked: function(date) {
-          this.$emit('date-clicked', date);
+          this.selected_date = date;
+          if (window.innerWidth > 600) {
+              this.$emit('date-clicked', date);
+          }
       },
       meetClicked: function(meet) {
           this.$emit('meet-clicked', meet);

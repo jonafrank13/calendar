@@ -3,36 +3,36 @@
     <div id="title-bar">
       <div class="left-bar">
         <span class="logo"></span>
-        <span class="title"><b>OPEX ANALYTICS</b> MEETING SCHEDULER</span>
+        <span class="title"><b>{{word('app_title_1')}}</b> {{word('app_title_2')}}</span>
       </div>
       <div class="right-bar">
         <div class="search" @click="showSearchBar = !showSearchBar; find = ''"></div>
         <div @click="showLangBox = !showLangBox">
-          <span class="lang">Language</span>
+          <span class="lang">{{word('lang')}}</span>
           <span class="lang-icon">天</span>
           <!-- TODO - Move as component -->
           <div class="lang-box" v-if="showLangBox">
-            <div class="lang-box-title">Change Language</div>
-            <div class="lang-box-opt" @click="changeLang(1)">
+            <div class="lang-box-title">{{word('change')}}</div>
+            <div class="lang-box-opt" @click="changeLang('en-us')">
               <div>
                 <div class="lang-box-opt-icn lg-eng"></div>
                 <div class="lang-box-opt-txt">English</div>
               </div>
-              <div class="lang-box-opt-ck" :class="(lang == 1) ? 'sel' : ''"></div>
+              <div class="lang-box-opt-ck" :class="(lang == 'en-us') ? 'sel' : ''"></div>
             </div>
-            <div class="lang-box-opt" @click="changeLang(2)">
+            <div class="lang-box-opt" @click="changeLang('zh')">
               <div>
                 <div class="lang-box-opt-icn lg-ch"></div>
                 <div class="lang-box-opt-txt">Chinese</div>
               </div>
-              <div class="lang-box-opt-ck" :class="(lang == 2) ? 'sel' : ''"></div>
+              <div class="lang-box-opt-ck" :class="(lang == 'zh') ? 'sel' : ''"></div>
             </div>
-            <div class="lang-box-opt" @click="changeLang(3)">
+            <div class="lang-box-opt" @click="changeLang('ru-ru')">
               <div>
                 <div class="lang-box-opt-icn lg-ru"></div>
                 <div class="lang-box-opt-txt">Russian</div>
               </div>
-              <div class="lang-box-opt-ck" :class="(lang == 3) ? 'sel' : ''"></div>
+              <div class="lang-box-opt-ck" :class="(lang == 'ru-ru') ? 'sel' : ''"></div>
             </div>
           </div>
           <!-- TODO - Move as component -->
@@ -43,10 +43,10 @@
       <!-- TODO - Move as component -->
       <div class="search-bar" v-if="showSearchBar">
         <span class="sc-wrap">
-          <input type="text" v-model="find" />
+          <input type="text" :placeholder="word('search')+'...'" v-model="find" />
           <span v-if="find" class="sc-close" @click="find=''">x</span>
           <div class="search-results">
-            <div v-for="result in search_results" :key="result.id" @click="meetClicked(result.date)" class="search-result-item">
+            <div v-for="result in search_results" :key="result.id" @click="meetClicked(result)" class="search-result-item">
               <div class="result-item">
                 <div class="result-icon"></div>
                 <div class="result-text" v-html="getFormatedTitle(result.title)"></div>
@@ -71,12 +71,13 @@
 import calendar from './components/Calendar'
 import meeting from './components/Meeting'
 import sample from './assets/sample-data'
+import i18n from './langKeys'
 
 export default {
   name: 'app',
   data () {
     return {
-      lang: 1,
+      lang: 'en-us',
       showLangBox: false,
       showSearchBar: false,
       meetings: [],
@@ -105,7 +106,20 @@ export default {
   methods: {
     dateClicked: function(date) {
       this.$refs.meeting.show = true;
-      this.$refs.meeting.date = date.toISOString().split('T')[0];
+      let d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+      if (month.length < 2) {
+        month = '0' + month;
+      }
+      if (day.length < 2) {
+        day = '0' + day;
+      }
+
+      let dateS = [year, month, day].join('-'); 
+      this.$refs.meeting.date = dateS;
     },
     meetClicked: function(meet) {
       this.$refs.meeting.edit = true;
@@ -188,6 +202,9 @@ export default {
         }
       })
       this.putLocalStorage();
+    },
+    word(key) {
+      return i18n[this.lang][key]
     }
   },
   computed: {
@@ -279,7 +296,7 @@ export default {
       border-radius: 5px;
       border: 1px solid #dfdfdf;
       box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6);
-      z-index: 5;
+      z-index: 6;
       background: white;
       .lang-box-title {
         color: $primary;
@@ -354,7 +371,9 @@ export default {
   background: white;
   display: flex;
   justify-content: center;
-  position: relative;
+  position: absolute;
+  width: 100%;
+  z-index: 5;
   .sc-wrap {
     display: inline-block;
     position: relative;
@@ -506,6 +525,10 @@ export default {
   #mt-wrapper {
     width: 100vw !important;
     left: 0 !important;
+  }
+  .new-evt-btn {
+    bottom: 25px;
+    right: 4vw;
   }
 }
 </style>

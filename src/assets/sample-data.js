@@ -7,13 +7,6 @@ export default [
         "desc": "Meeting with Brian for project report"
     },
     {
-        "date": "2019-09-01",
-        "time_from": "10:00",
-        "time_to": "10:30",
-        "title": "Product Team Cadence",
-        "desc": "Daily Standup"
-    },
-    {
         "date": "2019-09-02",
         "time_from": "10:00",
         "time_to": "10:30",
@@ -50,13 +43,6 @@ export default [
     },
     {
         "date": "2019-09-07",
-        "time_from": "10:00",
-        "time_to": "10:30",
-        "title": "Product Team Cadence",
-        "desc": "Daily Standup"
-    },
-    {
-        "date": "2019-09-08",
         "time_from": "10:00",
         "time_to": "10:30",
         "title": "Product Team Cadence",
@@ -105,13 +91,6 @@ export default [
         "desc": "Daily Standup"
     },
     {
-        "date": "2019-09-15",
-        "time_from": "10:00",
-        "time_to": "10:30",
-        "title": "Product Team Cadence",
-        "desc": "Daily Standup"
-    },
-    {
         "date": "2019-09-16",
         "time_from": "10:00",
         "time_to": "10:30",
@@ -148,13 +127,6 @@ export default [
     },
     {
         "date": "2019-09-21",
-        "time_from": "10:00",
-        "time_to": "10:30",
-        "title": "Product Team Cadence",
-        "desc": "Daily Standup"
-    },
-    {
-        "date": "2019-09-22",
         "time_from": "10:00",
         "time_to": "10:30",
         "title": "Product Team Cadence",
@@ -203,13 +175,6 @@ export default [
         "desc": "Daily Standup"
     },
     {
-        "date": "2019-09-29",
-        "time_from": "10:00",
-        "time_to": "10:30",
-        "title": "Product Team Cadence",
-        "desc": "Daily Standup"
-    },
-    {
         "date": "2019-09-30",
         "time_from": "10:00",
         "time_to": "10:30",
@@ -231,7 +196,7 @@ export default [
         "desc": "One on one sessions"
     },
     {
-        "date": "2019-09-22",
+        "date": "2019-09-23",
         "time_from": "08:00",
         "time_to": "09:30",
         "title": "Product Release Meeting",
