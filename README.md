@@ -1,6 +1,9 @@
-# calendar
+# Calendar
 
 > A calendar project
+
+# Live Demo
+https://jonafrank13.github.io/calendar/
 
 ## Build Setup
 
