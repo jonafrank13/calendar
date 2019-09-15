@@ -60,9 +60,9 @@
         </span>
       </div>
       <!-- TODO - Move as component -->
-      <calendar @date-clicked="dateClicked" @meet-clicked="meetClicked" :meetings="meetings"></calendar>
+      <calendar @date-clicked="dateClicked" @meet-clicked="meetClicked" :meetings="meetings" :key="renderKey"></calendar>
       <div class="new-evt-btn" @click="$refs.meeting.show = true"></div>
-      <meeting ref="meeting" @save="save" @update="update" @delete="deleteM"></meeting>
+      <meeting ref="meeting" @save="save" @update="update" @delete="deleteM" @close="refreshUI"></meeting>
     </div>
   </div>
 </template>
@@ -81,7 +81,8 @@ export default {
       showLangBox: false,
       showSearchBar: false,
       meetings: [],
-      find: ''
+      find: '',
+      renderKey: 0
     }
   },
   created: function () {
@@ -202,6 +203,10 @@ export default {
         }
       })
       this.putLocalStorage();
+    },
+    refreshUI() {
+      // This is a hack to reset/rerender components under calendar, mainly to reset new meeting/edit meeting indicators
+      this.renderKey++;
     },
     word(key) {
       return i18n[this.lang][key]
@@ -529,6 +534,9 @@ export default {
   .new-evt-btn {
     bottom: 25px;
     right: 4vw;
+  }
+  #title-bar .left-bar .title {
+    font-size: 9px;
   }
 }
 </style>

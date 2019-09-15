@@ -53,6 +53,7 @@ export default {
         this.time_from = null;
         this.time_to = null;
         this.desc = null;
+        this.$emit('close');
       },
       persist: function () {
           let meetingObj = {

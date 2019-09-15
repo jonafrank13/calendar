@@ -3,10 +3,13 @@
     <div :style="{visibility: (index < 8) ? 'visible' : 'hidden'}" class="cal-date-day">{{day}}</div>
     <div class="cal-date-day-n" :class="isCurrMonth ? '' : 'oth-month'">{{day_val}}</div>
     <div class="cal-date-evt-cnt">
-      <div v-for="meet in meetings" :key="meet.id" class="cal-date-evt" @click.stop="meetClicked(meet)">
+      <div v-for="meet in meetings" :key="meet.id" class="cal-date-evt" @click.stop="meetClicked(meet)" :class="(sel_id == meet.id) ? 'sel-evt' : ''">
         <span class="cal-date-evt-icn"></span>
         <span class="cal-date-evt-time">{{get12h(meet.time_from)}} - </span>
         <span class="cal-date-evt-txt">{{meet.title}}</span>
+      </div>
+      <div v-if="show_new" class="new-meet">
+        New Meeting...
       </div>
     </div>
   </div>
@@ -21,6 +24,12 @@ export default {
     pointer: Date,
     meetings: Array,
     selected_date: Date
+  },
+  data () {
+    return {
+      show_new: false,
+      sel_id: null
+    }
   },
   computed: {
     isToday: function() {
@@ -58,9 +67,11 @@ export default {
   },
   methods: {
     dateClicked: function() {
+      this.show_new = true;
       this.$emit("date-clicked", this.date);
     },
     meetClicked: function(meet) {
+      this.sel_id = meet.id;
       this.$emit("meet-clicked", meet);
     },
     get12h(time) {
@@ -127,6 +138,27 @@ export default {
       .cal-date-evt-txt {
         color: #333333;
         vertical-align: middle;
+      }
+    }
+    .new-meet {
+      font-size: 8px;
+      background: #eae8f3;
+      color: $primary;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-left: 2px;
+      text-align: left;
+    }
+    .sel-evt {
+      background: #fceaf0;
+      padding-left: 3px;
+      .cal-date-evt-icn {
+        display: none;
+      }
+      .cal-date-evt-time,
+      .cal-date-evt-txt {
+        color: $secondary;
       }
     }
   }
