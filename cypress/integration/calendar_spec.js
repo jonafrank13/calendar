@@ -2,7 +2,7 @@ describe("Calendar Application", () => {
     it("Load the application properly with functionalities", () => {
       cy.visit("/");
 
-      cy.get("#title-bar .title").should("have.text", "OPEX ANALYTICS MEETING SCHEDULER");
+      cy.get("#title-bar .title").should("have.text", "MEETING SCHEDULER");
 
       cy.get("#cal-mon").should("contain.text", new Date().toLocaleDateString({}, {month: "long"}));
 
@@ -18,7 +18,7 @@ describe("Calendar Application", () => {
 
       cy.contains("Russian").click();
 
-      cy.get("#title-bar .title").should("have.text", "OPEX аналитика планировщик встреч");
+      cy.get("#title-bar .title").should("have.text", "планировщик встреч");
 
       cy.get(".lang-icon").click();
 

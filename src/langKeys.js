@@ -1,7 +1,6 @@
 export default {
     'en-us': {
-        app_title_1: 'OPEX ANALYTICS',
-        app_title_2: 'MEETING SCHEDULER',
+        app_title: 'MEETING SCHEDULER',
         lang: 'Language',
         new: 'New',
         edit: 'Edit',
@@ -16,8 +15,7 @@ export default {
         save: 'Save'
     },
     'ru-ru': {
-        app_title_1: 'OPEX аналитика',
-        app_title_2: 'планировщик встреч',
+        app_title: 'планировщик встреч',
         lang: 'язык',
         new: 'новый',
         edit: 'Pедактировать',
@@ -32,8 +30,7 @@ export default {
         save: 'спасти'
     },
     'zh': {
-        app_title_1: 'OPEX 分析',
-        app_title_2: '会议日程安排',
+        app_title: '会议日程安排',
         lang: '语言',
         new: '新',
         edit: '编辑',

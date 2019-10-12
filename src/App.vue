@@ -3,7 +3,7 @@
     <div id="title-bar">
       <div class="left-bar">
         <span class="logo"></span>
-        <span class="title"><b>{{word('app_title_1')}}</b> {{word('app_title_2')}}</span>
+        <span class="title"><b>{{word('app_title')}}</b></span>
       </div>
       <div class="right-bar">
         <div class="search" @click="showSearchBar = !showSearchBar; find = ''"></div>
