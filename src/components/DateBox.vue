@@ -67,8 +67,10 @@ export default {
   },
   methods: {
     dateClicked: function() {
-      this.show_new = true;
-      this.$emit("date-clicked", this.date);
+      if (window.innerWidth > 600) {
+        this.show_new = true;
+        this.$emit("date-clicked", this.date);
+      }
     },
     meetClicked: function(meet) {
       this.sel_id = meet.id;
